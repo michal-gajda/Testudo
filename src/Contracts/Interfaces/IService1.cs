@@ -15,5 +15,11 @@
 
         [OperationContract]
         CompositeType GetDataUsingDataContract(CompositeType composite);
+
+        /// <summary>
+        /// Broadcasts a message to all subscribed duplex clients (Workers)
+        /// </summary>
+        [OperationContract]
+        int BroadcastToSubscribers(string message);
     }
 }

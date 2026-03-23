@@ -45,6 +45,25 @@ class Program
             var resultData = client.GetDataUsingDataContract(compositeData);
             Console.WriteLine($"Output: BoolValue={resultData.BoolValue}, StringValue={resultData.StringValue}\n");
 
+            // Broadcast test messages to all subscribed Workers
+            Console.WriteLine("Broadcasting messages to subscribed Workers:");
+            Console.WriteLine("─────────────────────────────────────");
+
+            string[] testMessages =
+            [
+                "Hello Worker! This is broadcast #1 from CLI",
+                "Test message: WCF duplex communication works!",
+                $"Timestamp broadcast: {DateTimeOffset.Now:O}"
+            ];
+
+            foreach (var msg in testMessages)
+            {
+                int subscriberCount = client.BroadcastToSubscribers(msg);
+                Console.WriteLine($"✓ Sent: \"{msg}\"");
+                Console.WriteLine($"  → Delivered to {subscriberCount} subscriber(s)\n");
+                System.Threading.Thread.Sleep(500);
+            }
+
             // Close connection
             ((IClientChannel)client).Close();
             Console.WriteLine("✓ Connection closed successfully");

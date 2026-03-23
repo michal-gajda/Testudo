@@ -10,38 +10,42 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
 {
     private IService1Duplex? _client;
     private ServiceCallbackHandler? _callbackHandler;
-    private string _serviceUrl = "net.tcp://localhost:8090/Service1";
+    private string _serviceUrl = "http://localhost:57870/Service1.svc/duplex";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Worker service starting at: {time}", DateTimeOffset.Now);
 
-        try
+        while (!stoppingToken.IsCancellationRequested)
         {
-            // Connect to WCF service with duplex communication
-            await ConnectToService(stoppingToken);
-
-            // Main loop - keep running and listen for server messages
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(30000, stoppingToken); // Check every 30 seconds
+                await ConnectToService(stoppingToken);
+
+                // Main loop - keep running and listen for server messages
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    await Task.Delay(30000, stoppingToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Normal shutdown
+                break;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Worker connection error: {message}. Retrying in 10 seconds...", ex.Message);
+                await DisconnectFromService();
+
+                try { await Task.Delay(10000, stoppingToken); }
+                catch (OperationCanceledException) { break; }
             }
         }
-        catch (OperationCanceledException)
-        {
-            logger.LogInformation("Worker service is stopping");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Worker service error: {message}", ex.Message);
-        }
-        finally
-        {
-            // Disconnect from service
-            await DisconnectFromService();
-            logger.LogInformation("Worker service stopped at: {time}", DateTimeOffset.Now);
-        }
+
+        await DisconnectFromService();
+        logger.LogInformation("Worker service stopped at: {time}", DateTimeOffset.Now);
     }
 
     private async Task ConnectToService(CancellationToken cancellationToken)
@@ -56,14 +60,13 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
             _callbackHandler = new ServiceCallbackHandler(callbackLogger);
             var context = new InstanceContext(_callbackHandler);
 
-            // Create WCF binding for duplex NetTcp communication
-            var binding = new NetTcpBinding
+            // Create WCF binding for duplex HTTP (WebSocket) communication
+            var binding = new NetHttpBinding
             {
                 ReceiveTimeout = TimeSpan.FromMinutes(30),
                 SendTimeout = TimeSpan.FromMinutes(30),
                 MaxBufferPoolSize = 524288,
-                MaxReceivedMessageSize = 65536,
-                Security = { Mode = SecurityMode.None }
+                MaxReceivedMessageSize = 65536
             };
 
             // Create endpoint address
@@ -92,25 +95,36 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
     {
         try
         {
-            if (_client != null)
+            if (_client is IClientChannel channel)
             {
                 logger.LogInformation("Disconnecting from WCF service");
 
-                // Unsubscribe from notifications
-                _client.Unsubscribe();
-
-                // Close the channel
-                if (_client is IClientChannel clientChannel)
+                if (channel.State == CommunicationState.Opened)
                 {
-                    clientChannel.Close();
+                    try
+                    {
+                        _client.Unsubscribe();
+                        channel.Close();
+                        logger.LogInformation("Successfully disconnected from WCF service");
+                    }
+                    catch
+                    {
+                        channel.Abort();
+                    }
                 }
-
-                logger.LogInformation("Successfully disconnected from WCF service");
+                else
+                {
+                    channel.Abort();
+                }
             }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error while disconnecting from WCF service: {message}", ex.Message);
+        }
+        finally
+        {
+            _client = null;
         }
     }
 }

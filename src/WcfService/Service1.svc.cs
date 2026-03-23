@@ -40,6 +40,16 @@
         }
 
         /// <summary>
+        /// Broadcasts a message to all currently subscribed duplex clients
+        /// </summary>
+        public int BroadcastToSubscribers(string message)
+        {
+            int count = ClientCallbackManager.Instance.GetConnectedClientsCount();
+            ClientCallbackManager.Instance.BroadcastMessage(message);
+            return count;
+        }
+
+        /// <summary>
         /// Subscribe the client to receive server notifications
         /// </summary>
         public void Subscribe()
