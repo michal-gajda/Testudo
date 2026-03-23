@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <RestoreProjectStyle Condition="'$(MSBuildProjectExtension)' == '.csproj' AND '$(TargetFramework)' == ''">PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+</Project>

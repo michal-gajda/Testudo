@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/Contracts/Testudo.Contracts.csproj" />
+  <Project Path="src/WcfService/Testudo.WcfService.csproj" />
+</Solution>
