@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="src/Cli/Testudo.Cli.csproj" />
   <Project Path="src/Contracts/Testudo.Contracts.csproj" />
-  <Project Path="src/WcfService/Testudo.WcfService.csproj" />
+  <Project Path="src/WcfService/Testudo.WcfService.csproj" Id="99d45d2f-e927-4075-9d67-9048c9684081" />
+  <Project Path="src/Worker/Testudo.Worker.csproj" />
 </Solution>

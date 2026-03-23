@@ -3,6 +3,9 @@
     using System.ServiceModel;
     using Testudo.Contracts.Models;
 
+    /// <summary>
+    /// Service contract for basic operations
+    /// </summary>
     [ServiceContract]
     public interface IService1
     {
