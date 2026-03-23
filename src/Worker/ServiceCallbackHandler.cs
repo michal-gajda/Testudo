@@ -17,16 +17,16 @@ public class ServiceCallbackHandler : IService1Callback
 
     public void OnServerMessage(string message)
     {
-        _logger.LogInformation("[WCF Callback] Server Message: {message}", message);
+        _logger.LogInformation("[WCF Callback] Server Message: {Message}", message);
     }
 
     public void OnNotification(string notification)
     {
-        _logger.LogInformation("[WCF Callback] Notification: {notification}", notification);
+        _logger.LogInformation("[WCF Callback] Notification: {Notification}", notification);
     }
 
     public void OnPong(string response)
     {
-        _logger.LogInformation("[WCF Callback] Pong received: {response}", response);
+        _logger.LogInformation("[WCF Callback] Pong received: {Response}", response);
     }
 }

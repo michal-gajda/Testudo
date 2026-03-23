@@ -1,10 +1,10 @@
-﻿namespace Testudo.Cli;
+namespace Testudo.Cli;
 
 using System;
 using System.ServiceModel;
 using Testudo.Contracts.Interfaces;
 
-class Program
+static class Program
 {
     static void Main(string[] args)
     {
@@ -12,7 +12,8 @@ class Program
         Console.WriteLine("║  WCF Service Client - Console App      ║");
         Console.WriteLine("╚════════════════════════════════════════╝\n");
 
-        string serviceUrl = "http://localhost:57870/Service1.svc";
+        string serviceUrl = Environment.GetEnvironmentVariable("TESTUDO_SERVICE_URL")
+            ?? throw new InvalidOperationException("TESTUDO_SERVICE_URL environment variable is not set");
         Console.WriteLine($"Connecting to: {serviceUrl}\n");
 
         try
@@ -84,4 +85,3 @@ class Program
         }
     }
 }
-
