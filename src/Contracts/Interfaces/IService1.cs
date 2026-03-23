@@ -11,6 +11,9 @@
     {
 
         [OperationContract]
+        string Ping();
+
+        [OperationContract]
         string GetData(int value);
 
         [OperationContract]

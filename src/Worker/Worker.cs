@@ -81,7 +81,11 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
 
             logger.LogInformation("Successfully connected to WCF service and subscribed to notifications");
 
-            // Wait a bit for initial server response
+            // Ping to verify duplex callback channel is working — response arrives via OnPong()
+            _client.Ping();
+            logger.LogInformation("Ping sent — waiting for Pong callback...");
+
+            // Wait a bit for initial server responses (subscription confirmation + pong)
             await Task.Delay(1000, cancellationToken);
         }
         catch (Exception ex)

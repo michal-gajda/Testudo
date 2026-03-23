@@ -19,5 +19,11 @@ namespace Testudo.Contracts.Interfaces
         /// </summary>
         [OperationContract(IsOneWay = true)]
         void OnNotification(string notification);
+
+        /// <summary>
+        /// Called by the service in response to a duplex Ping()
+        /// </summary>
+        [OperationContract(IsOneWay = true)]
+        void OnPong(string response);
     }
 }

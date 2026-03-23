@@ -19,6 +19,11 @@
             _clientId = null;
         }
 
+        string IService1.Ping()
+        {
+            return $"Pong from WCF service at {DateTimeOffset.UtcNow:O}";
+        }
+
         public string GetData(int value)
         {
             return string.Format("You entered: {0}", value);
@@ -47,6 +52,19 @@
             int count = ClientCallbackManager.Instance.GetConnectedClientsCount();
             ClientCallbackManager.Instance.BroadcastMessage(message);
             return count;
+        }
+
+        /// <summary>
+        /// Sends Pong back to the calling duplex client via callback
+        /// </summary>
+        void IService1Duplex.Ping()
+        {
+            if (_callback == null)
+            {
+                throw new InvalidOperationException("Client is not subscribed. Call Subscribe() first.");
+            }
+
+            _callback.OnPong($"Pong from WCF service at {DateTimeOffset.UtcNow:O}");
         }
 
         /// <summary>

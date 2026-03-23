@@ -24,4 +24,9 @@ public class ServiceCallbackHandler : IService1Callback
     {
         _logger.LogInformation("[WCF Callback] Notification: {notification}", notification);
     }
+
+    public void OnPong(string response)
+    {
+        _logger.LogInformation("[WCF Callback] Pong received: {response}", response);
+    }
 }

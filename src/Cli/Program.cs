@@ -23,6 +23,12 @@ class Program
             var factory = new ChannelFactory<IService1>(binding, endpoint);
             var client = factory.CreateChannel();
 
+            // Test Ping operation
+            Console.WriteLine("Testing Ping operation:");
+            Console.WriteLine("─────────────────────────────────────");
+            string pingResult = client.Ping();
+            Console.WriteLine($"✓ {pingResult}\n");
+
             // Test GetData operation
             Console.WriteLine("Testing GetData operation:");
             Console.WriteLine("─────────────────────────────────────");

@@ -19,5 +19,11 @@ namespace Testudo.Contracts.Interfaces
         /// </summary>
         [OperationContract]
         void Unsubscribe();
+
+        /// <summary>
+        /// Sends a ping to the service — response is delivered via OnPong() callback
+        /// </summary>
+        [OperationContract(Name = "DuplexPing")]
+        void Ping();
     }
 }
