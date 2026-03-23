@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Testudo.Cli": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "TESTUDO_SERVICE_URL": "http://localhost:57870/Service1.svc"
+      }
+    }
+  }
+}
